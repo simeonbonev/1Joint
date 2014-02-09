@@ -1,0 +1,23 @@
+<!doctype html>
+<html ng-app="1Joint">
+<head>
+	<script src="http://underscorejs.org/underscore-min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular-resource.js"></script>
+	<script type="text/javascript" src="todo.js"></script>
+	<link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+</head>
+<body>
+	<div ng-controller="TodoCtrl">
+		{{totalTodos}}
+		<form class="form-horizontal">
+			<input type="email" ng-model="loginFormEmail" ng-model-instant>
+			{{loginFormEmail}}
+			<br>
+			<input type="password" ng-model="loginFormPassword" ng-model-instant>
+			{{loginFormPassword}}
+			<button class="btn" ng-click="signIn()">sign in</button>
+		</form>
+	</div>
+</body>
+</html>
