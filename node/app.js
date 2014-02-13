@@ -51,6 +51,7 @@ app.get('/newPOI', routes.newPOI);
 //app.post('/addCollection', routes.addCollection(db));
 app.post('/adduser', routes.adduser(db));
 app.post('/addPOI', routes.addPOI(db));
+app.post('/login', routes.login(db));
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

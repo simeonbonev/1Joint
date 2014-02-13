@@ -11,6 +11,28 @@ exports.helloworld = function(req, res){
   res.render('helloworld', { title: 'Hello, World!' });
 };
 
+/*
+*   LOGIN
+*
+*/
+exports.login = function(db) {
+    return function(req,res) {
+        var email = req.body.username;
+        var password = req.body.password;
+        var collection = db.get('Users');
+        collection.find({"email" : email, "password" : password},{}, function(e,docs) {
+            if(docs.length == 0) {
+                res.send('{"status" : "failure"}');
+                console.log('INFO: login failed for ' + email + ':' + password +'.'); 
+            } else {
+                var user = docs[0];
+                console.log('INFO: ' + user.email + ' logged in.');
+                req.session.user = user.email;
+                res.send('{"status" : "ok"}');
+            }
+        })
+    }
+}
 
 
 exports.userlist = function(db) {

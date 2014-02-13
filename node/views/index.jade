@@ -1,18 +1,11 @@
 !!! 5
 html(ng-app='1Joint')
-head
-    script(src='http://underscorejs.org/underscore-min.js')
-    script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.min.js')
-    script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular-resource.js')
-    script(type='text/javascript', src='javascript/controllers.js')
-    link(rel='stylesheet', href='bootstrap/css/bootstrap.css')
-  body
-    div(ng-controller='TodoCtrl')
-      | {{totalTodos}}
-      form.form-horizontal
-        input(type='email', ng-model='loginFormEmail', ng-model-instant='ng-model-instant')
-        | {{loginFormEmail}}
-        br
-        input(type='password', ng-model='loginFormPassword', ng-model-instant='ng-model-instant')
-        | {{loginFormPassword}}
-        button.btn(ng-click='signIn()') sign in
+    head
+        script(src='http://underscorejs.org/underscore-min.js')
+        script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.min.js')
+        script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular-resource.js')
+        script(type='text/javascript', src='javascripts/controllers.js')
+        link(rel='stylesheet', href='bootstrap/css/bootstrap.css')
+    body
+        div(ng-view)
+      
