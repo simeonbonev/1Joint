@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  a(href="/userlist") Show all users as JSON
+  br
+  a(href="/POIlist") Show all POIs as JSON
+  br
+  a(href="/newuser") Add new users to the system
+  br
+  a(href="/newPOI") Add new POI to the system
+  br
+  a(href="/nonStopPharmacies") Show all 24/7 pharmacies
+  br
+  a(href="/CountOfPlacesWithWiFi") Show number of places with WiFi
+  br
+  a(href="/DeleteGovernmentBuildings") Delete government buildings
+  br
+  a(href="/minus10Seats") Minus 10 seats
+

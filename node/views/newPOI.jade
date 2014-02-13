@@ -1,0 +1,11 @@
+extends layout
+
+block content
+    h1= title
+    form#formAddUser(name="adduser",method="post",action="/addPOI")
+        input#inputName(type="text", placeholder="name", name="name")
+        input#inputLatitude(type="text", placeholder="latitude", name="latitude")
+        input#inputLongitude(type="text", placeholder="longitude", name="longitude")
+        input#inputType(type="text", placeholder="type", name="type")
+        input#inputWorkingHours(type="text", placeholder="working hours", name="workingHours")
+        button#btnSubmit(type="submit") submit
