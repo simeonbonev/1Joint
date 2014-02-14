@@ -1,15 +1,46 @@
-angular.module('1Joint', ['ngResource']);
+var oneJointControllers = angular.module('oneJointControllers', []);
 
-//var User = $resource
-
-function TodoCtrl($scope, $http) {
-	$scope.totalTodos = 4;
-
-	$scope.signIn = function () {
+oneJointControllers.controller('LoginController', ['$scope', '$http','$location', 
+	function($scope, $http, $location) {
+		$scope.signIn = function () {
 		console.log("signIn was clicked");
-		var data = new Object();
-		data.username = $scope.loginFormEmail;
-		data.password = $scope.loginFormPassword;
-		$http.post('/login', data);
-	};
-}
+		var userData = new Object();
+		userData.username = $scope.loginFormEmail;
+		userData.password = $scope.loginFormPassword;
+		$http.post('/login', userData).success(
+				function(data, status, headers, config) {
+					if(data.status == 'ok') {
+						$location.path('/home');
+					} else {
+						alert('The Email or the password provided are incorrect.');
+						$location.path('/');
+					}
+					$scope.loginFormEmail = '';
+					$scope.loginFormPassword = '';
+				}
+			).error(
+				function(data, status, headers, config) {
+					alert(status);
+				}
+			);
+		};
+	}
+]);
+
+oneJointControllers.controller('MapController', ['$scope', '$http', 
+	function ($scope, $http) {
+		$scope.data = 'MapController Data';
+	}
+]);
+
+
+// function TodoCtrl($scope, $http) {
+
+// 	$scope.signIn = function () {
+// 		console.log("signIn was clicked");
+// 		var data = new Object();
+// 		data.username = $scope.loginFormEmail;
+// 		data.password = $scope.loginFormPassword;
+// 		$http.post('/login', data);
+// 	};
+// }

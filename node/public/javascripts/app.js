@@ -1,18 +1,18 @@
-var oneJointApp = angular.module('1Joint', [
+var oneJointApp = angular.module('oneJointApp', [
 	'ngRoute',
-	'1JointControllers'
+	'oneJointControllers'
 	]);
 
 oneJointApp.config(['$routeProvider', 
 	function($routeProvider) {
 		$routeProvider.
 			when('/home', {
-				templateUrl: 
+				templateUrl: 'partials/map.html',
 				controller: 'MapController'
 			}).
 			when('/', {
-				templateUrl: 'partials/login.html'
-				controller: 'TodoController'
+				templateUrl: 'partials/login.html',
+				controller: 'LoginController'
 			})
 
 			.otherwise({
