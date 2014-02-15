@@ -33,8 +33,32 @@ exports.login = function(db) {
         })
     }
 }
-
-
+// exports.getFavourites = function(db) {
+//     return function(req, res) {
+//         var email = req.body.email;
+//         var collection = db.get('Users');
+//         collection.find({"email" : email}, {}, function(e,docs) {
+//             if(docs.length == 0) {
+//                 res.send('{"status" : "failure"}');
+//             }
+//             else {
+//                 var favourites = docs[0].favourites;
+//                 var result = new Array();
+//                 for(var i = 0; i <  favourites.length; i++) {
+//                     var s = favourites[i];
+//                     var curCol = db.get('POIs');
+//                     curCol.find({"name" : s},{}, function(e,docs) {
+//                         if(docs.length > 0) {
+//                             result.push(docs[0]);
+//                         }
+//                     });
+//                 }
+//                 console.log(result);
+//                res.send(result);  
+//             }
+//         };
+//     };
+// }; 
 exports.userlist = function(db) {
     return function(req, res) {
         var collection = db.get('Users');

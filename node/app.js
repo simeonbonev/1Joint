@@ -46,6 +46,7 @@ app.get('/minus10seats', routes.minus10seats(db));
 app.get('/helloworld',routes.helloworld);
 app.get('/newuser', routes.newuser);
 app.get('/newPOI', routes.newPOI);
+//app.get('/getFavourites', routes.getFavourites);
 
 
 //app.post('/addCollection', routes.addCollection(db));

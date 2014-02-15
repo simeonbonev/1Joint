@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Simple markers</title>
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.css">
+
+    <script>
+function displayFavourites() {
+  console.log('display favourites');
+  $.ajax({
+      type: 'GET',
+      url: 'getFavourites',
+      success: function(result) {
+        console.log(result);
+      }
+
+  })
+}
+
+var flag;
+
+function clearMap() {
+  if(flag==true) {
+    flag = false;
+    var myLatlng = new google.maps.LatLng(-25.363882,131.044922);
+    var mapOptions = {
+      zoom: 15,
+      center: myLatlng
+    }
+    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    navigator.geolocation.getCurrentPosition(function(position) {
+      initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+      map.setCenter(initialLocation);
+  }, function() {
+  });
+  }
+  else{
+    initialize();
+  }
+
+}
+
+function initMap(array) {
+  var myLatlng = new google.maps.LatLng(-25.363882,131.044922);
+    var mapOptions = {
+      zoom: 15,
+      center: myLatlng
+    }
+    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    navigator.geolocation.getCurrentPosition(function(position) {
+      initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+      map.setCenter(initialLocation);
+  }, function() {
+  });
+   infowindow = new google.maps.InfoWindow;
+   infoWinArr = new Array();
+    for(var i = 0; i < array.length; i++) {
+        console.log(array[i]);
+        var contentString = '<div id="content">'+
+      '<div>' + array[i].name+ '</div>' + '<br>' +
+      '<div>' + array[i].type + '</div>' +  '<br>' +
+      '<div>' + array[i].workingHours + '</div>' +
+      '<a onClick=addToFavourites(\''+array[i].name+'\')>Add to Favourites</a>' + '<br>' + 
+      '<a onClick=removeFromFavourites(\''+array[i].name+'\')>Remove from Favourites</a>' + 
+      '</div>';
+
+      
+      infoWinArr[i] = contentString;
+      console.log(infoWinArr);
+        var currentLatLng = new google.maps.LatLng(array[i].location.latitude, array[i].location.longitude);
+        var marker = new google.maps.Marker({
+            position: currentLatLng,
+            map: map,
+            title: array[i].name
+        });
+     
+google.maps.event.addListener(marker, 'click', (function(marker, i) {
+         return function() {
+             infowindow.setContent(infoWinArr[i]);
+             infowindow.open(map, marker);
+         }
+    })(marker, i));
+
+      }
+}
+
+
+
+function initialize() {
+  flag = true;
+  var array;
+  $.ajax({
+    type: 'GET', 
+    url: 'POIlist',
+    success: function(result) {
+      
+      array = result.POIlist;
+      console.log(array);
+      initMap(array);
+    }
+  })
+
+
+  // var myLatlng = new google.maps.LatLng(-25.363882,131.044922);
+  // var mapOptions = {
+  //   zoom: 4,
+  //   center: myLatlng
+  // }
+  // var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+  // for(var i = 0; i < array.length; i++) {
+  //     var currentLatLng = new google.maps.LatLng(array[i].location.latitude, array[i].location.longtitude);
+  //     console.log(currentLatLng);
+  //     var marker = new google.maps.Marker({
+  //         position: currentLatLng,
+  //         map: map,
+  //         title: array[i].name
+  //     });
+  //   }
+}
+
+function addToFavourites(poi) {
+  console.log("Adding " + poi + " to favourites.");
+}
+
+function removeFromFavourites(poi) {
+  console.log("Removing " + poi + " to favourites.");
+}
+
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+  </head>
+  <body>
+      <nav class="navbar navbar-inverse" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Brand</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#" onClick='displayFavourites()'>Display favourites</a></li>
+        <li><a href="#" onClick='clearMap()'>Toggle</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li class="divider"></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+      <form class="navbar-form navbar-left" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Login</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+   </div><!-- /.container-fluid -->
+  </nav>
+    <div id="map-canvas"></div>
+  </body>
+</html>

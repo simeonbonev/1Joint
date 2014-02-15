@@ -10,7 +10,8 @@ oneJointControllers.controller('LoginController', ['$scope', '$http','$location'
 		$http.post('/login', userData).success(
 				function(data, status, headers, config) {
 					if(data.status == 'ok') {
-						$location.path('/home');
+						//$location.path('/home');
+						window.location.href='index3.html'
 					} else {
 						alert('The Email or the password provided are incorrect.');
 						$location.path('/');
@@ -27,11 +28,15 @@ oneJointControllers.controller('LoginController', ['$scope', '$http','$location'
 	}
 ]);
 
-oneJointControllers.controller('MapController', ['$scope', '$http', 
-	function ($scope, $http) {
+oneJointControllers.controller('MapController', ['$scope', '$http','GoogleMaps',
+	function ($scope, $http, GoogleMaps) {
 		$scope.data = 'MapController Data';
+
+		 
+         
 	}
 ]);
+
 
 
 // function TodoCtrl($scope, $http) {
