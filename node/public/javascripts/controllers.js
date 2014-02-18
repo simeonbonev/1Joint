@@ -25,6 +25,13 @@ oneJointControllers.controller('LoginController', ['$scope', '$http','$location'
 				}
 			);
 		};
+		$scope.register = function() {
+			console.log($location.path());
+			$location.url('register');
+		}
+		$scope.addPOI = function() {
+			$location.path('/registerNewPoi');
+		}
 	}
 ]);
 
@@ -36,6 +43,40 @@ oneJointControllers.controller('MapController', ['$scope', '$http','GoogleMaps',
          
 	}
 ]);
+
+oneJointControllers.controller('RegisterController', ['$scope', '$http','$location',
+	function ($scope, $http, $location) {
+		$scope.signUp = function() {
+			console.log($scope.email);
+			console.log($scope.password);
+			console.log($scope.favourites);
+			var data = new Object();
+			data.email = $scope.email;
+			data.password = $scope.password;
+			data.favourites = $scope.favourites;
+			$http.post('/adduser', data).success(
+				function(data, status, headers, config) {
+					alert("Successfully registered.");
+					$location.path('/');
+				}).error(function(data, status, headers, config) {
+					alert(status);
+				});
+		}
+		 
+         
+	}
+]);
+
+oneJointControllers.controller('RegisterPoiController', ['$scope', '$http','$location',
+	function ($scope, $http, $location) {
+		$scope.data = 'MapController Data';
+
+		 
+         
+	}
+]);
+
+
 
 
 

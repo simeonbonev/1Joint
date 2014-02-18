@@ -16,16 +16,39 @@
     <link rel="stylesheet" href="/bootstrap/css/bootstrap.css">
 
     <script>
+
+
 function displayFavourites() {
   console.log('display favourites');
   $.ajax({
       type: 'GET',
       url: 'getFavourites',
       success: function(result) {
-        console.log(result);
+        getPois(result);
       }
 
   })
+}
+
+function getPois(result) {
+  console.log(result);
+  $.post("getPois", result, function(response) {
+    console.log("Response to getPois: " + response);
+    console.log(JSON.stringify(response, null, 4));
+    initMap(response.result);
+  });
+}
+
+function logout() {
+  $.ajax({
+    type:'GET', 
+    url: 'logout',
+    success: function(result) {
+      window.location.href='/';
+    }
+  });
+  window.location.href='/';
+
 }
 
 var flag;
@@ -38,10 +61,11 @@ function clearMap() {
       zoom: 15,
       center: myLatlng
     }
-    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    window.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     navigator.geolocation.getCurrentPosition(function(position) {
       initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
       map.setCenter(initialLocation);
+      testMap();
   }, function() {
   });
   }
@@ -57,18 +81,20 @@ function initMap(array) {
       zoom: 15,
       center: myLatlng
     }
-    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    window.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     navigator.geolocation.getCurrentPosition(function(position) {
       initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
-      map.setCenter(initialLocation);
+      window.map.setCenter(initialLocation);
   }, function() {
   });
-   infowindow = new google.maps.InfoWindow;
+  
+      testMap();
+     infowindow = new google.maps.InfoWindow;
    infoWinArr = new Array();
     for(var i = 0; i < array.length; i++) {
         console.log(array[i]);
-        var contentString = '<div id="content">'+
-      '<div>' + array[i].name+ '</div>' + '<br>' +
+        var contentString = '<div id="content" class="panel panel-primary">'+
+      '<div class="panel-heading"><h3 class="panel-title"></h3>' + array[i].name+ '</div>' + '<br>' +
       '<div>' + array[i].type + '</div>' +  '<br>' +
       '<div>' + array[i].workingHours + '</div>' +
       '<a onClick=addToFavourites(\''+array[i].name+'\')>Add to Favourites</a>' + '<br>' + 
@@ -95,7 +121,19 @@ google.maps.event.addListener(marker, 'click', (function(marker, i) {
       }
 }
 
-
+function getNear() {
+   navigator.geolocation.getCurrentPosition(function(position) {
+      initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+      $.ajax({
+          type: 'POST',
+          url: 'getNear',
+          data: {latitude:position.coords.latitude , longitude: position.coords.longitude},
+          success:function(result) {
+            console.log(JSON.stringify(result,null,4));
+          }
+      });
+    });
+}
 
 function initialize() {
   flag = true;
@@ -104,39 +142,117 @@ function initialize() {
     type: 'GET', 
     url: 'POIlist',
     success: function(result) {
-      
       array = result.POIlist;
       console.log(array);
       initMap(array);
     }
   })
-
-
-  // var myLatlng = new google.maps.LatLng(-25.363882,131.044922);
-  // var mapOptions = {
-  //   zoom: 4,
-  //   center: myLatlng
-  // }
-  // var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-  // for(var i = 0; i < array.length; i++) {
-  //     var currentLatLng = new google.maps.LatLng(array[i].location.latitude, array[i].location.longtitude);
-  //     console.log(currentLatLng);
-  //     var marker = new google.maps.Marker({
-  //         position: currentLatLng,
-  //         map: map,
-  //         title: array[i].name
-  //     });
-  //   }
 }
 
 function addToFavourites(poi) {
   console.log("Adding " + poi + " to favourites.");
+    $.ajax({
+    type: 'POST', 
+    url: 'addFavourite',
+    data: {name: poi},
+    success: function(result) {
+      alert(result.status);
+    }
+  })
+
+}
+
+function togglePharmacies() {
+  $.get( "nonStopPharmacies", function( data ) {
+    console.log(JSON.stringify(data, null, 4));
+    initMap(data.nonStopPharmacies);
+  });
 }
 
 function removeFromFavourites(poi) {
-  console.log("Removing " + poi + " to favourites.");
+      $.ajax({
+    type: 'POST', 
+    url: 'removeFavourite',
+    data: '{name: '+poi+'}',
+    success: function(result) {
+      alert(result.status);
+    }
+  })
+  }
+
+function switchNightMode() {
+        if(window.nightMode == true) {
+        window.nightMode = false;
+      } else {
+        window.nightMode = true;
+      }
+      testMap();
 }
 
+function centerMap(){
+  navigator.geolocation.getCurrentPosition(function(position) {
+      initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+      window.map.setCenter(initialLocation);
+    });
+}
+
+function testMap() {
+   navigator.geolocation.getCurrentPosition(function(position) {
+      initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+      window.map.setCenter(initialLocation);
+      
+ 
+      if(window.nightMode) {
+              console.log("Toggling nightMode");
+              var styleArr = [
+                {
+                  "featureType": "landscape",
+                  "stylers": [
+                    { "invert_lightness": true },
+                    { "saturation": -100 }
+                  ]
+                },{
+                  "featureType": "road",
+                  "elementType": "geometry",
+                  "stylers": [
+                    { "hue": "#00e5ff" },
+                    { "saturation": -44 }
+                  ]
+                },{
+                  "featureType": "water",
+                  "stylers": [
+                    { "lightness": -100 }
+                  ]
+                }
+              ];
+              map.setOptions({styles: styleArr});
+      } else {
+            console.log("Toggling daylight mode");
+            var styleArray = [
+            {
+              featureType: "all",
+              stylers: [
+                { saturation: -80 }
+              ]
+            },{
+              featureType: "road.arterial",
+              elementType: "geometry",
+              stylers: [
+                { hue: "#00ffee" },
+                { saturation: 50 }
+              ]
+            },{
+              featureType: "poi.business",
+              elementType: "labels",
+              stylers: [
+                { visibility: "off" }
+              ]
+            }
+          ];
+          map.setOptions({styles: styleArray});
+      }
+    });
+}
 
 google.maps.event.addDomListener(window, 'load', initialize);
 
@@ -159,43 +275,20 @@ google.maps.event.addDomListener(window, 'load', initialize);
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#" onClick='displayFavourites()'>Display favourites</a></li>
-        <li><a href="#" onClick='clearMap()'>Toggle</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-            <li class="divider"></li>
-            <li><a href="#">One more separated link</a></li>
-          </ul>
-        </li>
+        <li class="active"><a href="#" onClick='displayFavourites()'><span class="glyphicon glyphicon-star"></span>Display favourites</a></li>
+        <li><a href="#" onClick='clearMap()'><span class="glyphicon glyphicon-globe"></span>Toggle</a></li>
+        <li><a href="#" onClick='getNear()'><span class="glyphicon glyphicon-map-marker"></span>Nearby</a></li>
+        <li><a href="#" onClick='switchNightMode()'>Night Mode</a></li>
+        <li><a href="#" onClick='centerMap()'><span class="glyphicon glyphicon-pushpin"></span>Center</a></li>
+
       </ul>
-      <form class="navbar-form navbar-left" role="search">
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search">
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
-      </form>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Login</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-          </ul>
-        </li>
+        <li><a href="#" onClick='togglePharmacies()'><span class="glyphicon glyphicon-plus"></span>24/7 Pharmacies</a></li>
+        <li><a href="#" onClick='logout()'><span class="glyphicon glyphicon-off"></span>Logout</a></li>
       </ul>
     </div><!-- /.navbar-collapse -->
    </div><!-- /.container-fluid -->
   </nav>
-    <div id="map-canvas"></div>
+    <div id="map-canvas" style="width: 100%; height: 100%"></div>
   </body>
 </html>

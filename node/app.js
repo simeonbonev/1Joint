@@ -46,13 +46,18 @@ app.get('/minus10seats', routes.minus10seats(db));
 app.get('/helloworld',routes.helloworld);
 app.get('/newuser', routes.newuser);
 app.get('/newPOI', routes.newPOI);
-//app.get('/getFavourites', routes.getFavourites);
+app.get('/logout', routes.logout);
+app.get('/getFavourites', routes.getFavourites(db));
 
 
 //app.post('/addCollection', routes.addCollection(db));
 app.post('/adduser', routes.adduser(db));
 app.post('/addPOI', routes.addPOI(db));
 app.post('/login', routes.login(db));
+app.post('/addFavourite', routes.addFavourite(db));
+app.post('/getPois', routes.getPois(db));
+app.post('/getNear', routes.getNear(db));
+//app.post('/removeFavourite', routes.removeFavourite(db));
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

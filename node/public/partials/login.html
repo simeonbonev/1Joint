@@ -1,5 +1,22 @@
-<form class="form-horizontal">
-  <input type="email" ng-model="loginFormEmail" ng-model-instant="ng-model-instant"/><br/>
-  <input type="password" ng-model="loginFormPassword" ng-model-instant="ng-model-instant"/>
-  <button ng-click="signIn()" class="btn">sign in</button>
-</form>
+<div style="width: 20%; position: fixed;
+  top: 30%;
+  left: 40%;">
+<div class="panel panel-primary">
+	<div class="panel-heading">
+        <h3 class="panel-title">Login</h3>
+      </div>
+	<form class="form-horizontal">
+	<div class="input-group input-group-lg">
+  <span class="input-group-addon">@</span>
+
+	  <input type="email" class="form-control" placeholder="john@doe-corp.com" ng-model="loginFormEmail" ng-model-instant="ng-model-instant"/>
+	</div>
+	  <div class="input-group input-group-lg">
+  <span class="input-group-addon"># </span>
+	  <input type="password" class="form-control" placeholder="*******" ng-model="loginFormPassword" ng-model-instant="ng-model-instant"/>
+	 </div>
+	  <button ng-click="signIn()" class="btn" style="width: 100%"><span class="glyphicon glyphicon-ok"></span> sign in</button></br>
+	  <a href="#" ng-click="register()">Sign Up</a>
+	</form>
+</div>
+</div>

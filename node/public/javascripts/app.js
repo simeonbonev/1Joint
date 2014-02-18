@@ -33,6 +33,14 @@ oneJointApp.config(['$routeProvider',
 			when('/', {
 				templateUrl: 'partials/login.html',
 				controller: 'LoginController'
+			}).
+			when('/register', {
+				templateUrl: 'partials/register.html',
+				controller: 'RegisterController'
+			}).
+			when('/registerPoi', {
+				templateUrl: 'partials/registerPoi.html',
+				controller: 'RegisterPoiController'
 			})
 
 			.otherwise({

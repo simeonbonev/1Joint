@@ -1,7 +1,4 @@
 
-/*
- * GET home page.
- */
 
 exports.index = function(req, res){
   res.render('index.jade', { title: '1Joint' });
@@ -10,6 +7,9 @@ exports.index = function(req, res){
 exports.helloworld = function(req, res){
   res.render('helloworld', { title: 'Hello, World!' });
 };
+/*
+ * GET home page.
+ */
 
 /*
 *   LOGIN
@@ -33,32 +33,107 @@ exports.login = function(db) {
         })
     }
 }
-// exports.getFavourites = function(db) {
-//     return function(req, res) {
-//         var email = req.body.email;
-//         var collection = db.get('Users');
-//         collection.find({"email" : email}, {}, function(e,docs) {
-//             if(docs.length == 0) {
-//                 res.send('{"status" : "failure"}');
-//             }
-//             else {
-//                 var favourites = docs[0].favourites;
-//                 var result = new Array();
-//                 for(var i = 0; i <  favourites.length; i++) {
-//                     var s = favourites[i];
-//                     var curCol = db.get('POIs');
-//                     curCol.find({"name" : s},{}, function(e,docs) {
-//                         if(docs.length > 0) {
-//                             result.push(docs[0]);
-//                         }
-//                     });
-//                 }
-//                 console.log(result);
-//                res.send(result);  
-//             }
-//         };
-//     };
-// }; 
+
+exports.addFavourite = function(db) {
+    return function(req, res) {
+        console.log('One');
+         var email = req.session.user;
+         var collection = db.get('Users');
+            console.log(req.body);
+            console.log('Two');
+            console.log(email);
+         collection.find({"email" : email}, {}, function(e,docs) {
+                var doc = docs.pop();
+                var arr = doc.favourites;
+                var flag = false;
+                var result = new Array();
+                while(arr.length > 0) {
+                    var k = arr.pop();
+                    console.log(k);
+                    console.log(req.body.name);
+                    if(k === req.body.name) {
+                        flag = true;
+                        break;
+                    }
+                    result.push(k);
+                }
+
+                console.log(flag);
+
+                if(flag === false) {
+                    console.log('vatre');
+                    console.log(result);
+                    result.push(req.body.name);
+                    console.log(result);
+                    doc.favorites = result;
+                    console.log(doc);
+
+                }
+                console.log(email);
+                collection.updateById(doc._id, doc, function() {});
+         });
+
+
+        //     var favs = docs[0].favourites;
+        //     var flag = false;
+        //     for(var i = 0; i < favs.length; i++) {
+        //         if(favs[i] == req.body.name) {
+        //             flag = true;
+        //         }
+        //     }
+        //     if(flag == false) {
+        //         var doc = docs[0];
+        //         doc.favourites.push(req.body.name);
+        //         collection.update({"email" : email}, doc, function() {});
+        //     }
+        // }
+    };
+}
+
+exports.logout = function() {
+    return function(req,res) {
+        console.log('Logout was called');
+        req.session=null;
+        res.send('{"status" : "ok"}');
+    }
+}
+
+ exports.getFavourites = function(db) {
+     return function(req, res) {
+         var email = req.session.user;
+         console.log(email);
+         var collection = db.get('Users');
+         collection.find({"email" : email},{},function(e,docs) {
+            if(docs.length == 0) {
+                res.send({"status" : "ok"});
+                console.log('then');
+            }
+            else {
+                console.log('else');
+                var entry = docs.pop();
+                console.log(entry);
+                console.log(entry.favorites);
+                res.send({"favourites" : entry.favorites});
+            }
+         });
+     }
+}
+
+exports.getPois = function(db){
+    return function(req, res) {
+        var poisArr = req.body.favourites;
+        console.log(poisArr);
+        var collection = db.get('POIs');
+        var resultArr = new Array();
+         collection.find({"name" : {$in : poisArr}}, {}, function(e, docs) {
+            console.log(JSON.stringify(docs, null, 4));
+            console.log("before sending");
+            res.send({"result" : docs});
+             });
+        
+    }
+}
+
 exports.userlist = function(db) {
     return function(req, res) {
         var collection = db.get('Users');
@@ -132,7 +207,7 @@ exports.newPOI = function(req, res){
 
 exports.adduser = function(db) {
     return function(req, res) {
-
+        console.log("Function called");
         // Get our form values. These rely on the "name" attributes
         var email = req.body.email;
         var password = req.body.password;
@@ -162,6 +237,17 @@ exports.adduser = function(db) {
             }
         });
 
+    }
+}
+
+exports.getNear = function(db) {
+    return function(req,res) {
+        console.log(JSON.stringify(req.body, null, 4));
+        var collection = db.get('POIs');
+
+        collection.find({"location" : {$near : [parseFloat(req.body.latitude),parseFloat(req.body.longitude)], $maxDistance: 1500}},{},function(e,docs) {
+            console.log("Near result: " + JSON.stringify(docs, null, 4));
+        });
     }
 }
 
